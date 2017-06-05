@@ -24,10 +24,10 @@ var (
 	oidDataContentType          = asn1.ObjectIdentifier([]int{1, 2, 840, 113549, 1, 7, 1})
 	oidEncryptedDataContentType = asn1.ObjectIdentifier([]int{1, 2, 840, 113549, 1, 7, 6})
 
-	oidFriendlyName     = asn1.ObjectIdentifier([]int{1, 2, 840, 113549, 1, 9, 20})
-	oidLocalKeyID       = asn1.ObjectIdentifier([]int{1, 2, 840, 113549, 1, 9, 21})
-	oidMicrosoftCSPName = asn1.ObjectIdentifier([]int{1, 3, 6, 1, 4, 1, 311, 17, 1})
-	oidMicrosoftLocalKey = asn1.ObjectIdentifier([]int{1,3,6,1,4,1,311,17,2})
+	oidFriendlyName      = asn1.ObjectIdentifier([]int{1, 2, 840, 113549, 1, 9, 20})
+	oidLocalKeyID        = asn1.ObjectIdentifier([]int{1, 2, 840, 113549, 1, 9, 21})
+	oidMicrosoftCSPName  = asn1.ObjectIdentifier([]int{1, 3, 6, 1, 4, 1, 311, 17, 1})
+	oidMicrosoftLocalKey = asn1.ObjectIdentifier([]int{1, 3, 6, 1, 4, 1, 311, 17, 2})
 )
 
 type pfxPdu struct {
