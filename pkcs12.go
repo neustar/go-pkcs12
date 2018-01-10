@@ -18,16 +18,16 @@ import (
 	"encoding/hex"
 	"encoding/pem"
 	"errors"
+	"strings"
 )
 
 var (
 	oidDataContentType          = asn1.ObjectIdentifier([]int{1, 2, 840, 113549, 1, 7, 1})
 	oidEncryptedDataContentType = asn1.ObjectIdentifier([]int{1, 2, 840, 113549, 1, 7, 6})
 
-	oidFriendlyName      = asn1.ObjectIdentifier([]int{1, 2, 840, 113549, 1, 9, 20})
-	oidLocalKeyID        = asn1.ObjectIdentifier([]int{1, 2, 840, 113549, 1, 9, 21})
-	oidMicrosoftCSPName  = asn1.ObjectIdentifier([]int{1, 3, 6, 1, 4, 1, 311, 17, 1})
-	oidMicrosoftLocalKey = asn1.ObjectIdentifier([]int{1, 3, 6, 1, 4, 1, 311, 17, 2})
+	oidFriendlyName     = asn1.ObjectIdentifier([]int{1, 2, 840, 113549, 1, 9, 20})
+	oidLocalKeyID       = asn1.ObjectIdentifier([]int{1, 2, 840, 113549, 1, 9, 21})
+	oidMicrosoftCSPName = asn1.ObjectIdentifier([]int{1, 3, 6, 1, 4, 1, 311, 17, 1})
 )
 
 type pfxPdu struct {
@@ -134,6 +134,9 @@ func convertBag(bag *safeBag, password []byte) (*pem.Block, error) {
 	for _, attribute := range bag.Attributes {
 		k, v, err := convertAttribute(&attribute)
 		if err != nil {
+			if strings.Contains(err.Error(), "unknown attribute") {
+				continue
+			}
 			return nil, err
 		}
 		block.Headers[k] = v
@@ -185,8 +188,6 @@ func convertAttribute(attribute *pkcs12Attribute) (key, value string, err error)
 		// This key is chosen to match OpenSSL.
 		key = "Microsoft CSP Name"
 		isString = true
-	case attribute.Id.Equal(oidMicrosoftLocalKey):
-		key = "Microsoft Local Key set"
 	default:
 		return "", "", errors.New("pkcs12: unknown attribute with OID " + attribute.Id.String())
 	}
@@ -201,9 +202,7 @@ func convertAttribute(attribute *pkcs12Attribute) (key, value string, err error)
 	} else {
 		var id []byte
 		if err := unmarshal(attribute.Value.Bytes, &id); err != nil {
-			if len(attribute.Value.Bytes) != 0 {
-				return "", "", err
-			}
+			return "", "", err
 		}
 		value = hex.EncodeToString(id)
 	}
